@@ -1,0 +1,24 @@
+sudo: required
+services:
+  - docker
+
+before_install:
+  - docker build -t tdjoel/react-test -f ./client/Dockerfile.dev ./client
+
+script:
+  - docker run tdjoel/react-test npm test -- --coverage
+
+after_success:
+  - docker -t tdjoel/multi-client ./client
+  - docker -t tdjoel/multi-nginx ./nginx
+  - docker -t tdjoel/multi-server ./server
+  - docker -t tdjoel/multi-worker ./worker
+  # Log in to the docker CLI
+  - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_ID" --password-stdin
+  # Take those images and push them to docker hub
+  - docker push tdjoel/multi-client
+  - docker push tdjoel/multi-nginx
+  - docker push tdjoel/multi-server
+  - docker push tdjoel/multi-worker
+
+
