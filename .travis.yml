@@ -1,3 +1,4 @@
+language: generic 
 sudo: required
 services:
   - docker
@@ -6,7 +7,7 @@ before_install:
   - docker build -t tdjoel/react-test -f ./client/Dockerfile.dev ./client
 
 script:
-  - docker run tdjoel/react-test npm test -- --coverage
+  - docker run -e CI=true tdjoel/react-test npm test
 
 after_success:
   - docker build -t tdjoel/multi-client ./client
